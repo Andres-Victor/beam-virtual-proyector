@@ -1,0 +1,404 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Beam Proyector</title>
+    <link rel="icon" href="src/icons/beam.ico">
+    <link rel="stylesheet" href="styles/proyectorStyle.css" />
+  </head>
+  <body>
+    <div id="conectionPanel" class="conectionData">
+      <div class="content">
+        <p>¡Escanea para acceder!</p>
+        <div class="qr-code-container">
+          <div id="qr-code" class="blur"></div>
+          <a onclick="unlockQr()" id="qr-filter"
+            ><img style="width: 15vh; height: 15vh" src="src/icons/eye.svg" alt=""
+          /></a>
+        </div>
+        <p
+          style="font-size: 2vh; text-align: center; color: #5e5e5e"
+          id="manualIp"
+        ></p>
+        <button onclick="setReady()" class="readyButton">¡Estoy listo!</button>
+        <button
+          onclick="socket.emit('openFolder')"
+          class="readyButton folderOpen"
+        >
+          <img src="src/icons/folder.svg" />
+        </button>
+      </div>
+    </div>
+    <div class="mainContent">
+      
+      <img class="source hidden" id="image_source" src="" alt="" />
+
+      <video class="source hidden" id="video_source" src=""></video>
+
+      <p id="text_source" class="source hidden"></p>
+
+      <div class="source hidden" id="cronometer_source">
+        <p class="l_chain"></p>
+        <h1 class="timer"></h1>
+        <p class="r_chain"></p>
+      </div>
+      
+    </div>
+
+  </body>
+  <script src="script/qrcode.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+    <script>
+    //#region START
+    const page_direction = '<%= direction %>' //Gets the server direction to convert in QR
+
+    generateQRCode(page_direction + "control");
+
+    document.getElementById("manualIp").innerHTML = "O conectate manualmente a: " + page_direction + "control";
+
+    const ProyectorHTML = 
+    {
+      image: document.getElementById("image_source"),
+      video: document.getElementById("video_source"),
+      text: document.getElementById("text_source"),
+      ready: false, 
+    };
+    
+    let current_tool = 
+    {
+      name: undefined,
+      value: undefined,
+    }
+
+    let Current_Media_File;
+
+    ProyectorHTML.video.onended = () => {
+        SendProyectorStatus();
+    };
+
+    
+    //Function to set full screen the window
+    document.addEventListener("keydown", function(event) 
+    {
+      if (event.key === "f") 
+      {
+        if (!document.fullscreenElement) 
+        {
+          document.documentElement.requestFullscreen();
+        } 
+        else 
+        {
+          document.exitFullscreen();
+        }
+      } else if (event.key === "Escape") {
+        document.exitFullscreen();
+      }
+    });
+
+    //#endregion
+
+    //#region Tools
+    let tool_list = [];
+
+    class Tool
+    {
+      constructor(name, action = function(arg=arguments){}, stopAction = function(){})
+      {
+        this.name = name,
+        this.action = action;
+        this.stopAction = stopAction;
+      }
+      triggerAction(arg = arguments)
+      {
+        this.action(arg);
+      }
+      stop()
+      {
+        this.stopAction();
+      }
+    }
+
+    function loadTools()
+    {
+      
+      tool_list.push(new Tool('text', (text)=>
+      {
+        if(text === '' || !text)
+        {
+          stopTools();
+          SendProyectorStatus();
+          return;
+        }
+        ProyectorHTML.text.classList.remove("hidden");
+        ProyectorHTML.text.innerHTML = text;
+      },
+      ()=>
+      {
+        ProyectorHTML.text.classList.add('hidden');
+        ProyectorHTML.text.innerHTML = '';
+      }));
+      tool_list.push(new Tool('timer', (time)=>
+      { 
+        if(!time)
+        {
+          stopTools();
+          SendProyectorStatus();
+          return;
+        }
+        cronometer(time);
+      },
+      ()=>
+      {
+        stop_cronometer = true;
+        cronometerHTML.base.classList.add('hidden');
+      }));
+
+    }
+
+    function stopTools()
+    {
+      let tool = tool_list.find(tool=>tool.name === current_tool.name);
+      if(tool)
+      {
+        tool.stop()
+        current_tool.name = null;
+        current_tool.value = null;
+      }
+    }
+
+    loadTools();
+
+    //#endregion
+
+    //#region SOCKET MANAGMENT
+    const socket = io();
+
+      //Set current video on Time
+    socket.on("videoTime", (time) => 
+    {
+      if (ProyectorHTML.video.src !== undefined) 
+      {
+        ProyectorHTML.video.currentTime = time;
+        SendProyectorStatus();
+      } 
+      else 
+      {
+        SendProyectorStatus();
+      }
+    });
+
+      //Play current Media
+    socket.on("playMedia", (toPlay) => {
+        ProyectorHTML.image.classList.add("hidden");
+        ProyectorHTML.video.classList.add("hidden");
+        Current_Media_File = toPlay;
+        fadeOutVolume();
+        setTimeout(() => 
+        {
+          ProyectorHTML.video.src = "";
+          ProyectorHTML.image.src = "";
+          if (!Current_Media_File) 
+          {
+            return SendProyectorStatus();
+          } 
+          else if (toPlay.video) 
+          {
+            ProyectorHTML.video.src = toPlay.source;
+            ProyectorHTML.video.addEventListener("loadedmetadata", () => {SendProyectorStatus();});
+            ProyectorHTML.video.currentTime = 0;
+            ProyectorHTML.video.play();
+            ProyectorHTML.video.volume = 1;
+            ProyectorHTML.video.classList.remove("hidden");
+          } 
+          else 
+          {
+            ProyectorHTML.image.src = toPlay.source;
+            ProyectorHTML.image.classList.remove("hidden");
+            SendProyectorStatus();
+          }
+        }, 500);
+      });
+
+      //Pause Unpause current video
+    socket.on("togglePause", () => {
+      !ProyectorHTML.video.src.includes("html")
+        ? !ProyectorHTML.video.paused
+          ? ProyectorHTML.video.pause()
+          : ProyectorHTML.video.play()
+        : null;
+      SendProyectorStatus();
+    });
+
+      //Trigger tool with value
+    socket.on('trigger_tool', (toolName, args)=>
+    {
+      let tool = tool_list.find(tool=>tool.name === toolName);
+      if(tool)
+      {
+        tool.action(args)
+        current_tool.name = toolName;
+        current_tool.value = args;
+      }
+      SendProyectorStatus();
+    })
+
+      //Stop all tools
+    socket.on('stop_tool', () =>
+    {
+      stopTools();
+      SendProyectorStatus();
+    })
+
+      //Send proyector status
+    socket.on("proyectorStatusRequest", () => SendProyectorStatus());
+    //#endregion
+      
+    //#region Local Functions
+    function fadeOutVolume() 
+    {
+        const video = ProyectorHTML.video;
+        const initialVolume = video.volume;
+        const step = initialVolume / (400 / 10);
+        const fade = setInterval(() => 
+        {
+          if (video.volume > 0) 
+          {
+            video.volume = Math.max(0, video.volume - step);
+          } 
+          else 
+          {
+            clearInterval(fade);
+          }
+        }, 10);
+      }
+    
+      //Show QR
+    function unlockQr() 
+    {
+      document.getElementById("qr-code").classList.remove("blur");
+      document.getElementById("qr-filter").classList.add("hidden");
+    } 
+
+      //Quit connection pannel and enable sending proyector status
+    function setReady() 
+    {
+      ProyectorHTML.ready = true;
+      document.getElementById("conectionPanel").classList.add("hidden-panel");
+    }
+    //#endregion  
+      
+    //#region SOCKET Functions
+    
+    function SendProyectorStatus() //Send proyector status to all controllers
+    {
+      if(!ProyectorHTML.ready) return console.log('Cannot send Playng status: Proyector is not ready');
+
+        const status = 
+        {
+          media: Current_Media_File,
+          image: 
+          {
+            showing: !ProyectorHTML.image.src.includes(".html"),
+          },
+          video: 
+          {
+            ended: ProyectorHTML.video.currentTime === ProyectorHTML.video.duration,
+            paused: ProyectorHTML.video.paused,
+            time: ProyectorHTML.video.currentTime,
+            duration: ProyectorHTML.video.duration,
+          },
+          current_tool: 
+          {
+            name:current_tool.name,
+            value: current_tool.value,
+          },
+        };
+
+        socket.emit("proyectorStatus", status);
+      }
+
+    //#endregion  
+    
+    //#region CRONOMETER Functions
+
+    const cronometerHTML = 
+    {
+        base: document.querySelector('#cronometer_source'),
+        l_chain: document.querySelector('#cronometer_source .l_chain'),
+        timer: document.querySelector('#cronometer_source .timer'),
+        r_chain: document.querySelector('#cronometer_source .r_chain'),
+    } 
+
+    function convert(minutos) //Convert minutes in array of all values, example 5 = [5:00, 4:59, 4:58, ...]
+    { 
+         minutos *= 60;
+         let arr = [];
+         for (let i = minutos; i >= 0; i--) 
+         {
+           let horas = Math.floor(i / 60);
+           let mins = i % 60;
+           arr.push(`${horas}:${mins.toString().padStart(2, '0')}`);
+         }
+         return arr;
+    }
+
+    function getNext(array, index, num) //Get x next values of index on array
+    {
+        const arr = array;
+        const siguientesDos = [];
+        for (let i = index + 1; i <= index + num; i++) {
+          if (arr[i]) {
+            siguientesDos.push(arr[i]);
+          }
+        }
+        return siguientesDos.join(' ');
+    }
+    
+    function getPrev(array, index, num) //Get x prev values of index on array and return into string
+    {
+        const arr = array;
+        const previosDos = [];
+        for (let i = index - 1; i >= index - num; i--) {
+          if (arr[i]) {
+            previosDos.push(arr[i]);
+          }
+        }
+        return previosDos.reverse().join(' ');
+    }
+
+      let stop_cronometer = false;
+    function cronometer(minutes) //Start a cronometer in frontend, use stop_cronometer to stop this cronometer
+    {
+        cronometerHTML.base.classList.remove('hidden');
+        cronometerHTML.timer.innerHTML = '';
+        cronometerHTML.l_chain.innerHTML = '';
+        cronometerHTML.r_chain.innerHTML = '';
+        const times = convert(minutes);
+        let chainCount = 4;
+
+        stop_cronometer = false;
+
+        let total = times.length;
+        let i = 0
+
+        let interval = setInterval(() => 
+        {
+            if(i >= total || stop_cronometer)
+            {   
+                cronometerHTML.base.classList.add('hidden');
+                clearInterval(interval);
+                current_tool.name = undefined;
+                current_tool.value = undefined;
+                SendProyectorStatus();
+                return
+            }
+            cronometerHTML.timer.innerHTML = times[i];
+            cronometerHTML.l_chain.innerHTML = getPrev(times, i, 4);
+            cronometerHTML.r_chain.innerHTML = getNext(times, i, 4);
+            i++;
+        }, 1000);
+    }
+
+    //#endregion
+    </script>
+</html>

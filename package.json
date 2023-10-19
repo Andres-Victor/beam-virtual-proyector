@@ -1,0 +1,25 @@
+{
+  "name": "beam-proyector",
+  "version": "1.0.0",
+  "description": "Beam is a remotely controlled video and image projector using Node.js and Socket.io",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "buildpy": "pyinstaller --onefile --noconsole ./resources/video_info/video_info.py",
+    "build": "C:/Coding_Projects/Beam_Electron/BAT_FILES/builder.bat x64",
+    "build32": "C:/Coding_Projects/Beam_Electron/BAT_FILES/builder.bat x32"
+  },
+  "keywords": [],
+  "author": "Andres-Victor",
+  "repository": "https://github.com/Andres-Victor/beam-proyector.git",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "fluent-ffmpeg": "^2.1.2",
+    "socket.io": "^4.7.2"
+  },
+  "devDependencies": {
+    "electron": "^27.0.0"
+  }
+}

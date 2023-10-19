@@ -1,0 +1,555 @@
+*
+{
+    padding: 0;
+    margin: 0;
+}
+*::-webkit-scrollbar {
+    display: none;
+}
+.hidden
+{
+    opacity: 0;
+    scale: 0;
+}
+.background
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.background img
+{
+    width: 100%;
+    object-fit: cover;
+}
+
+.blur
+{
+    filter: blur(10px);
+}
+
+.lowOpacity
+{
+    opacity: 0.45;
+}
+body
+{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #121212;
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-attachment: fixed;
+    height: 180%;
+    width: 100%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+
+
+.player
+{
+    width: 100%;
+    height: 55%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.player .player__top
+{
+    position: inherit;
+    border-radius: 0vh 0vh 2vh 2vh;
+    width: 100%;
+    max-width: 170vh;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.player .player__top .player__cover
+{
+    display: flex;
+    overflow: hidden;
+    width: 40vh;
+    height: 40vh;
+    border-radius: 1vh;
+}
+.player .player__top .player__cover img
+{
+    object-fit: cover;
+    width: 100%;
+}
+
+.player .player__top .player__info
+{
+    width: 40vh;
+    height: 10vh;
+    display: flex;
+    font-size: 3.5vh;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+}
+.player .player__top .player__info #player__author
+{
+    font-size: 2.5vh;
+    font-weight: 450;
+    color: #a1a1a1;
+}
+
+.player__controls
+{
+    position: inherit;
+    bottom: 0px;
+    background-color: #121212;
+    width: 100%;
+    height: 15vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player__controls button , .player__controls input[type=checkbox]
+{
+    background-color: unset;
+    border: unset;
+    width: 9vb;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent
+}
+.player__controls input[type=checkbox]
+{
+    background-image: url(../src/icons/tools_open.svg);
+    background-size: 60%;
+    background-repeat:no-repeat;
+    background-position: center;
+    cursor: pointer;
+}
+
+.player__controls input[type=checkbox]:checked
+{
+    background-size: 80%;
+}
+
+.player__controls input[type=checkbox]:checked ~ .controls__tools_menu
+{
+    opacity: 1;
+    transform: translate(18vh, -100%);
+    pointer-events: all;
+}
+
+
+.controls__tools_menu
+{
+    background-color: #2b2b2b;
+    height:fit-content;
+    width: 6vh;
+    border-radius: 1vh;
+    position: absolute;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1vh;
+    padding: 0.5vh;
+    transform-origin: top;
+    transform: translate(18vh);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s;
+    
+}
+
+.controls__tools_menu li
+{
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.controls__tools_menu li:hover
+{
+    scale: 1.2;
+}
+.controls__tools_menu li:active
+{
+    scale: 0.9;
+}
+.controls__tools_menu li img
+{
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+
+
+.player__controls button:hover
+{
+    opacity: 0.7;
+}
+.player__controls button:active
+{
+    scale: 0.85;
+}
+.player__controls button img
+{
+    width: 50%;
+}
+
+.player__media-list
+{
+    width: 100%;
+    max-width: 80vh;
+    height: 35%;
+    gap: 5vh;
+    border-radius: 2vh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 5vh;
+    padding-bottom: 10vh;
+    overflow-y: scroll;
+}
+.player__media-list p
+{
+    color:white;
+    margin: auto;
+    font-size: 4vh;
+    text-align: center;
+    text-wrap:pretty;
+}
+.player__media-list .media_item
+{
+    width: 100%;
+    min-height: 20vh;
+    max-height: 20vh;
+    border-radius: 1vh;
+    overflow: hidden;
+    background-color: #1f1f1f;
+    color: white;
+    display: flex;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.media_item .background
+{
+    opacity: 0;
+    transition: all 1s;
+}
+
+.media_item:hover .background
+{
+    cursor: pointer;
+    opacity: 0.15;
+}
+
+.media_item:active
+{
+    opacity: 0.9;
+    scale: 0.9;
+}
+
+.media_item .item__preview
+{
+    background-color: #2b2b2b;
+    min-width: 20vh;
+    max-width: 20vh;
+    height: 100%;
+    display: flex;
+}
+.media_item .item__preview img
+{
+    min-width: 100%;
+    object-fit: cover;
+}
+.media_item .item__name
+{
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+    padding: 2vh;
+    font-size: 2.7vh;
+    font-weight: 500;
+}
+
+.media_item .item__name span
+{
+    font-size: 2vh;
+    font-weight: 430;
+    color: #7a7a7a;
+}
+
+.media_item .fileType
+{
+    width: 5vh;
+    height: 5vh;
+    position: absolute;
+    right: 2vh;
+    bottom: 2vh;
+
+}
+
+.Video_Timeline_Progress {
+    border-radius: 1vh;
+    height: 1vh;
+    width: 100%;
+    background-color: #C0C0C0;
+    z-index: 1;
+
+  }
+  .Video_Timeline_Progress .bar {
+    height: 100%;
+    border-radius: 1vh;
+    background-color: #E95F74;
+    z-index: 1;
+  }
+
+  #Video_Timeline_Handle {
+    display: block;
+    position:absolute;
+    z-index: 1;
+    margin-top: -1.25vh;
+    margin-left: -0.5vh;
+    width: 2.5vh;
+    height: 2.5vh;
+    border: 0.5vh solid #D3D5DF;
+    border-top-color: #D3D5DF;
+    border-right-color: #D3D5DF;
+    border-radius: 100%;
+    background-color: #fff;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, .2);
+    cursor:pointer;
+  }
+
+  #scroll__time
+  {
+    position: absolute;
+    background-color: #fff;
+    width: 6vh;
+    height: 4vh;
+    border-radius: 1vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5vh;
+    right: -1.75vh;
+    top: -5vh;
+    transition: all 0.4s;
+  }
+
+  .draggable {
+    float: left; margin: 0 10px 10px 0;
+  }
+
+  #player__Video_Timeline
+  {
+    width: 80%;
+    max-width: 100vh;
+    height: 4.5vh;
+    position: inherit;
+    transition: all 0.4s;
+  }
+
+
+  .player__media-folder
+  {
+    position: relative;
+    display: flex;
+    justify-content: left;
+    padding-left: 2vh;
+    width: 90%;
+    max-width: 82vh;
+    height: 6vh;
+    overflow-x: auto;
+    gap: 2vh;
+    margin-bottom: 2vh;
+  }
+
+  .player__media-folder .folder-ind
+  {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-width: 15vh;
+    height: 5vh;
+    background-color: #2b2b2b;
+    color: white;
+    font-size: 2.5vh;
+    font-weight: 460;
+    cursor: pointer;
+    border-radius: 1vh;
+    transition: all 0.4s;
+  }
+
+  .folder-ind:hover
+  {
+    background-color: #4a9dc4;
+  }
+  .folder-ind.active
+  {
+    background-color: #E95F74;
+  }
+  
+    .player__media-finder
+    {
+        width: 95%;
+        height: 7vh;
+        margin-bottom: 2vh;
+        margin-top: 2vh;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row;
+        max-width: 80vh;
+    }
+    .player__media-finder input[type='text']
+    {
+        border: none;
+        height: 100%;
+        width: 100%;
+        background-color: #2b2b2b;
+        border-radius: 10vh;
+        color: white;
+        text-wrap: nowrap;
+        text-align: left;
+        text-indent: 2vh;
+        font-size: 3.5vh;
+    }
+    .player__media-finder input[type='text']:focus
+    {
+        border: none;
+        outline: none;
+    }
+    .player__media-finder button
+    {
+        position: absolute;
+        width: 6vh;
+        height: 6vh;
+        right: 0.1vh;
+        border-radius: 10vh;
+        border: none;
+        outline: none;
+        background-image: url('../src/icons/cross.svg');
+        background-size: cover;
+        background-color: #E95F74;
+    }
+
+  .popUp
+  {
+    position: fixed;
+    /* pointer-events: none; */
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000000b9;
+  }
+
+  .popUp .Time_Get
+  {
+    width: 40vh;
+    height: 27vh;
+    background-color: #C0C0C0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 2vh;
+    position: absolute;
+  }
+
+  .popUp .Time_Get input
+  {
+    color: #2b2b2b;
+    font-size: 5vh;
+    width: 60%;
+    height: 10vh;
+    text-align: center;
+    background: none;
+    border: 0px solid;
+    transition: all 0.4s;
+  }
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .Time_Get .buttons
+  {
+    position: absolute;
+    bottom: 1.5vh;
+    height: 6vh;
+    width: 100%;
+    display: flex;
+    align-items:stretch;
+    justify-content: space-around;
+  }
+
+  .Time_Get .buttons button
+    {
+        width: 45%;
+        border: unset;
+        border-radius: 1vh;
+        background-color: #2b2b2b;
+        border: 2px #2b2b2b solid;
+        color: white;
+        font-weight: 550;
+        font-size: 2.5vh;
+        transition: all 0.4s;
+    }
+    .Time_Get p
+    {
+        position: absolute;
+        font-size: 2vh;
+        text-align: center;
+        top: 2vh;
+    }
+.popUp .Time_Get input:focus
+  {
+
+    border-bottom: 1vh #2b2b2b solid;
+    border-radius: 1vh;
+    outline: none;
+  }
+  .Time_Get .buttons button:hover
+    {
+        background-color: #ffffff;
+        border: 2px white solid;
+        color: black;
+    }
+    .Time_Get .buttons button:active
+    {
+        background-color: #000000;
+        border: 2px black solid;
+        scale: 0.9;
+        color: rgb(255, 255, 255);
+    }
+
+.dont_show
+{
+    display: none;
+}
