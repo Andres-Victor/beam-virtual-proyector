@@ -207,6 +207,7 @@
             ProyectorHTML.video.addEventListener("loadedmetadata", () => {SendProyectorStatus();});
             ProyectorHTML.video.currentTime = 0;
             ProyectorHTML.video.play();
+            clearInterval(fade_volume_interval);
             ProyectorHTML.video.volume = 1;
             ProyectorHTML.video.classList.remove("hidden");
           } 
@@ -254,12 +255,13 @@
     //#endregion
       
     //#region Local Functions
+    var fade_volume_interval = setInterval(() => {}, 100);;
     function fadeOutVolume() 
     {
         const video = ProyectorHTML.video;
         const initialVolume = video.volume;
         const step = initialVolume / (400 / 10);
-        const fade = setInterval(() => 
+        fade_volume_interval = setInterval(() => 
         {
           if (video.volume > 0) 
           {
@@ -267,7 +269,7 @@
           } 
           else 
           {
-            clearInterval(fade);
+            clearInterval(fade_volume_interval);
           }
         }, 10);
       }

@@ -1,6 +1,6 @@
-/.RELASES
+/dist
 /BAT_FILES
-/.RESOURCES
+/resources
 /cache
 /media
 /node_modules
