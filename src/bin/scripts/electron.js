@@ -13,7 +13,7 @@ function createWindow () {
   win.setMenu(null)
 
   // Carga el archivo HTML.
-  win.loadURL('http://127.0.0.1:3200/proyector')
+  win.loadURL('http://127.0.0.1:32005/proyector')
 }
 
 // Este método se llamará cuando Electron haya terminado

@@ -41,7 +41,7 @@ const app = express();
       app.set('view engine', 'html');
       const router = express.Router();
 const server = require('http').createServer(app);
-const port = 3200;
+const port = 32005;
 
 app.use(express.static(path.join(__dirname,'./src/public')));
 app.use('/media', express.static(mediaFolder));

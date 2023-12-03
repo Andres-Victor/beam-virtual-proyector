@@ -525,20 +525,21 @@
     function jumpMedia(next = true) 
     {
       if (!current_media_displayed) return;
-      currentIndex = Media_Files_Loaded_Data.findIndex(media => media.fileName === current_media_displayed.fileName);
+      var Filtered_Media_Files_loaded_Data = Media_Files_Loaded_Data.filter(media => media.folderName === folders.current);
+      currentIndex = Filtered_Media_Files_loaded_Data.findIndex(media => media.fileName === current_media_displayed.fileName);
       if (next) 
       {
-        if (Media_Files_Loaded_Data.length - 1 > currentIndex)
-          play(Media_Files_Loaded_Data[currentIndex + 1].fileName);
+        if (Filtered_Media_Files_loaded_Data.length - 1 > currentIndex)
+          play(Filtered_Media_Files_loaded_Data[currentIndex + 1].fileName);
         else 
-          play(Media_Files_Loaded_Data[0].fileName);
+          play(Filtered_Media_Files_loaded_Data[0].fileName);
       } 
       else 
       {
         if (currentIndex > 0) 
-          play(Media_Files_Loaded_Data[currentIndex - 1].fileName);
+          play(Filtered_Media_Files_loaded_Data[currentIndex - 1].fileName);
         else 
-          play(Media_Files_Loaded_Data[Media_Files_Loaded_Data.length - 1].fileName);
+          play(Filtered_Media_Files_loaded_Data[Filtered_Media_Files_loaded_Data.length - 1].fileName);
       }
     }
     function getMediaItem(title, author, fileName, thumbnail, isVideo) {
