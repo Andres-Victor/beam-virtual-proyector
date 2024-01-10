@@ -1,0 +1,109 @@
+/* *
+{
+    padding: 0;
+    margin: 0;
+}
+
+body
+{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+} */
+
+@font-face 
+{
+    font-family: Monteserrat;
+    src: url(../src/fonts/Montserrat-VariableFont_wght.ttf);
+}
+
+#cronometer_source
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3.5vh;
+    transition: all 0.8s;
+}
+
+#cronometer_source .cronometer_base
+{
+    position: relative;
+    width: 50vh;
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100%;
+    border: solid rgba(255, 255, 255, 0.911) 1.5vh;
+    overflow: hidden;
+}
+
+#cronometer_source .cronometer_base h1
+{
+    z-index: 99;
+    font-family: Monteserrat;
+    font-size: 15vh;
+    color: white;
+}
+
+#cronometer_source .fill
+{
+    width: 100%;
+    /* height: 100%; */
+    background-color: rgba(0, 0, 0, 0.295);
+    position: absolute;
+    bottom: 0;
+    transition: all 0.2s;
+}
+
+.timer_end
+{
+    animation: timer_end 1s linear infinite;
+}
+
+@keyframes timer_end 
+{
+    0%
+    {
+        outline: solid 0vh white;
+    }    
+
+    100%
+    {
+        outline: solid 6vh rgba(255, 255, 255, 0);
+    }
+}
+
+.jumpText
+{
+    animation: jumpText 0.5s ease;
+}
+
+@keyframes jumpText 
+{
+    0%
+    {
+        scale: 1;
+    }    
+
+    50%
+    {
+        scale: 1.1;
+    }
+
+    100%
+    {
+        scale: 1;
+    }
+}
+

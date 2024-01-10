@@ -5,6 +5,7 @@
     <title>Beam Proyector</title>
     <link rel="icon" href="src/icons/beam.ico">
     <link rel="stylesheet" href="styles/proyectorStyle.css" />
+    <link rel="stylesheet" href="styles/timerStyle.css" />
   </head>
   <body>
     <div id="conectionPanel" class="conectionData">
@@ -38,16 +39,24 @@
       <p id="text_source" class="source hidden"></p>
 
       <div class="source hidden" id="cronometer_source">
+        <div class="cronometer_base">
+            <div class="fill"></div>
+            <h1 class="timer">5:00</h1>
+        </div>
+      </div>
+
+      <!-- <div class="source hidden" id="cronometer_source">
         <p class="l_chain"></p>
         <h1 class="timer"></h1>
         <p class="r_chain"></p>
-      </div>
+      </div> -->
       
     </div>
 
   </body>
   <script src="script/qrcode.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
+    <script src="script/timer.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script>
     //#region START
     const page_direction = '<%= direction %>' //Gets the server direction to convert in QR
@@ -145,12 +154,15 @@
           SendProyectorStatus();
           return;
         }
-        cronometer(time);
+        startTimer(time);
+        SendProyectorStatus();
       },
       ()=>
       {
-        stop_cronometer = true;
-        cronometerHTML.base.classList.add('hidden');
+        stopTimer();
+        current_tool.name = undefined;
+        current_tool.value = undefined;
+        SendProyectorStatus();
       }));
 
     }
@@ -320,87 +332,5 @@
       }
 
     //#endregion  
-    
-    //#region CRONOMETER Functions
-
-    const cronometerHTML = 
-    {
-        base: document.querySelector('#cronometer_source'),
-        l_chain: document.querySelector('#cronometer_source .l_chain'),
-        timer: document.querySelector('#cronometer_source .timer'),
-        r_chain: document.querySelector('#cronometer_source .r_chain'),
-    } 
-
-    function convert(minutos) //Convert minutes in array of all values, example 5 = [5:00, 4:59, 4:58, ...]
-    { 
-         minutos *= 60;
-         let arr = [];
-         for (let i = minutos; i >= 0; i--) 
-         {
-           let horas = Math.floor(i / 60);
-           let mins = i % 60;
-           arr.push(`${horas}:${mins.toString().padStart(2, '0')}`);
-         }
-         return arr;
-    }
-
-    function getNext(array, index, num) //Get x next values of index on array
-    {
-        const arr = array;
-        const siguientesDos = [];
-        for (let i = index + 1; i <= index + num; i++) {
-          if (arr[i]) {
-            siguientesDos.push(arr[i]);
-          }
-        }
-        return siguientesDos.join(' ');
-    }
-    
-    function getPrev(array, index, num) //Get x prev values of index on array and return into string
-    {
-        const arr = array;
-        const previosDos = [];
-        for (let i = index - 1; i >= index - num; i--) {
-          if (arr[i]) {
-            previosDos.push(arr[i]);
-          }
-        }
-        return previosDos.reverse().join(' ');
-    }
-
-      let stop_cronometer = false;
-    function cronometer(minutes) //Start a cronometer in frontend, use stop_cronometer to stop this cronometer
-    {
-        cronometerHTML.base.classList.remove('hidden');
-        cronometerHTML.timer.innerHTML = '';
-        cronometerHTML.l_chain.innerHTML = '';
-        cronometerHTML.r_chain.innerHTML = '';
-        const times = convert(minutes);
-        let chainCount = 4;
-
-        stop_cronometer = false;
-
-        let total = times.length;
-        let i = 0
-
-        let interval = setInterval(() => 
-        {
-            if(i >= total || stop_cronometer)
-            {   
-                cronometerHTML.base.classList.add('hidden');
-                clearInterval(interval);
-                current_tool.name = undefined;
-                current_tool.value = undefined;
-                SendProyectorStatus();
-                return
-            }
-            cronometerHTML.timer.innerHTML = times[i];
-            cronometerHTML.l_chain.innerHTML = getPrev(times, i, 4);
-            cronometerHTML.r_chain.innerHTML = getNext(times, i, 4);
-            i++;
-        }, 1000);
-    }
-
-    //#endregion
     </script>
 </html>

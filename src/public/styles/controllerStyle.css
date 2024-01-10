@@ -3,7 +3,8 @@
     padding: 0;
     margin: 0;
 }
-*::-webkit-scrollbar {
+*::-webkit-scrollbar 
+{
     display: none;
 }
 .hidden
@@ -472,7 +473,7 @@ body
   .popUp .Time_Get
   {
     width: 40vh;
-    height: 27vh;
+    height: 30vh;
     background-color: #C0C0C0;
     display: flex;
     align-items: center;
@@ -482,17 +483,39 @@ body
     position: absolute;
   }
 
-  .popUp .Time_Get input
+  .popUp .Time_Get input[type='number']
   {
     color: #2b2b2b;
     font-size: 5vh;
-    width: 60%;
+    width: 30%;
     height: 10vh;
     text-align: center;
-    background: none;
+    background: white;
+    border-radius: 1vh;
     border: 0px solid;
     transition: all 0.4s;
   }
+
+  .popUp .Time_Get h3
+  {
+    color: #2b2b2b;
+    font-size: 6vh;
+    height: 10vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-color: rebeccapurple; */
+    /* height: 10vh; */
+    text-align: center;
+  }
+
+  .popUp .Time_Get .inputs
+  {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;

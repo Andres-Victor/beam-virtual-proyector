@@ -10,8 +10,12 @@
   <body>
     <div class="popUp hidden">
       <div class="Time_Get">
-        <p class="text">Introduce los minutos que durará el cronometro</p>
-        <input class="number" type="number" value="5"/>
+        <p class="text">Introduce la duración del temporizador en minutos : segundos</p>
+        <div class="inputs">
+          <input class="number" onchange="if(this.value==='')this.value=0;" id="min" type="number" value="5"/>
+          <h3>:</h3>
+          <input class="number" onchange="if(this.value==='')this.value=0;" id="seg" type="number" value="00"/>
+        </div>
         <div class="buttons">
           <button id="popUp_Submit" class="submit">Continuar</button>
           <button id="popUp_Cancel" class="cancel" style="background:none; color: #2b2b2b;">Cancelar</button>
@@ -567,7 +571,8 @@
       {
         window: document.querySelector('.popUp'),
         text: document.querySelector('.popUp .text'),
-        number: document.querySelector('.popUp .number'),
+        minutes: document.querySelector('.popUp #min'),
+        seconds: document.querySelector('.popUp #seg'),
         cancel: document.querySelector('.popUp .cancel'),
         submit: document.querySelector('.popUp .submit'),
       }  
@@ -586,7 +591,7 @@
           PoPUp.submit.addEventListener('click', ()=>
           {
             PoPUp.window.classList.add('hidden');
-            resolve(PoPUp.number.value);
+            resolve(parseInt(PoPUp.seconds.value) + (parseInt(PoPUp.minutes.value)*60));
           });
         })    
         return Object;

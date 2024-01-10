@@ -1,6 +1,6 @@
 {
   "name": "beam-proyector",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Beam is a remotely controlled video and image projector using Node.js and Socket.io",
   "main": "main.js",
   "scripts": {
